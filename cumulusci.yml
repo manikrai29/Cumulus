@@ -135,11 +135,11 @@ tasks:
             num_records: 5000
             debug_db_path: /tmp/temp_db.db
 
-    gen_test_data_bdi_ci:
+    gen_test_data_bdi_co:
         description: 'Generate test data for BDI benchmarks into an org'
         class_path: tasks.generate_bdi_CO_data.GenerateBDIData_CO
         options:
-            mapping: 'tasks.generate_bdi_CO_data.GenerateBDIData_CO'
+            mapping: 'datasets/bdi_benchmark/mapping-CO.yml'
             num_records: 5000
 
     performance_tests_help_text:
@@ -294,7 +294,31 @@ tasks:
                     - NPSP_GAU_Allocation
                     - NPSP_General_Accounting_Unit
 
+    generate_and_load_bdi_co_data:
+        class_path: tasks.generate_and_load_data.GenerateAndLoadData
+        options:
+            num_records: 12
+            database_url: sqlite:////tmp/temp_db.db
+            mapping: datasets/bdi_benchmark/mapping-CO.yml
+            data_generation_task: tasks.generate_bdi_CO_data.GenerateBDIData_CO
+
+    set_bdi_mapping_mode:
+        class_path: tasks.set_BDI_mapping_mode.SetBDIMappingMode
+
 flows:
+    bdi_org_bug_setup:
+        steps:
+            1:
+                flow: qa_org_namespaced
+            2:
+                task: generate_and_load_bdi_co_data
+            3:
+                task: turn_on_debug_logs
+            4:
+                task: set_bdi_mapping_mode
+                options:
+                    mode: Data Import Field Mapping
+
     config_dev:
         steps:
             3:
