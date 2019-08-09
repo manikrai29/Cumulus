@@ -101,7 +101,7 @@ Workaround Bug
 
 *** Test Cases ***
 
-Import a data batch via the API - Complex Objects No ASCs
+Import a data batch via the API - Complex Objects No ASCs - 200 batch size
 
     Batch Data Import   200
 
