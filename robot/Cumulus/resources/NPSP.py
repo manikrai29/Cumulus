@@ -1137,24 +1137,32 @@ class NPSP(object):
     def batch_data_import(self, batchsize):
         """"Do a BDI import using the API and wait for it to complete"""
 
-        code = """Data_Import_Settings__c diSettings = UTIL_CustomSettingsFacade.getDataImportSettings();
-                diSettings.Donation_Matching_Behavior__c = BDI_DataImport_API.ExactMatchOrCreate;
-                update diSettings;
-                BDI_DataImport_BATCH bdi = new BDI_DataImport_BATCH();
-                ID ApexJobId = Database.executeBatch(bdi, %d);
-                """ % int(batchsize)
-        subtask_config = TaskConfig(
-                {"options": {"apex" : code}}
-        )
+        try:
+            code = """Data_Import_Settings__c diSettings = UTIL_CustomSettingsFacade.getDataImportSettings();
+                    diSettings.Donation_Matching_Behavior__c = BDI_DataImport_API.ExactMatchOrCreate;
+                    update diSettings;
+                    BDI_DataImport_BATCH bdi = new BDI_DataImport_BATCH();
+                    ID ApexJobId = Database.executeBatch(bdi, %d);
+                    """ % int(batchsize)
+            subtask_config = TaskConfig(
+                    {"options": {"apex" : code}}
+            )
 
-        self.cumulusci._run_task(AnonymousApexTask, subtask_config)
+            self.cumulusci._run_task(AnonymousApexTask, subtask_config)
 
-        subtask_config = TaskConfig(
-                {"options": {"class_name" : "BDI_DataImport_BATCH"}}
-        )
+            subtask_config = TaskConfig(
+                    {"options": {"class_name" : "BDI_DataImport_BATCH"}}
+            )
 
-        self.cumulusci._run_task(BatchApexWait, subtask_config)
-        
+            self.cumulusci._run_task(BatchApexWait, subtask_config)
+        except Exception as e:
+            print(repr(e))
+            print(e)
+            import traceback
+            traceback.print_exc()
+
+            raise e
+
     def click_wrapper_related_list_button(self,heading,button_title):  
         """Clicks a button in the heading of a related list when the related list is enclosed in wrapper.
            Waits for a modal to open after clicking the button.
