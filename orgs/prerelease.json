@@ -6,7 +6,7 @@
   "settings": {
     "orgPreferenceSettings": {
       "chatterEnabled": true,
-      "disableParallelApexTesting": true,
+      "disableParallelApexTesting": false,
       "notesReservedPref01": true,
       "s1DesktopEnabled": true,
       "translation": true
